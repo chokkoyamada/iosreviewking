@@ -1,5 +1,8 @@
 <?php
 class Tools extends CI_Controller {
+
+    const BASE_URL = "https://itunes.apple.com/us/rss/";
+    const LIMIT = 300;
     
     public function __construct(){
         parent::__construct();
@@ -10,29 +13,48 @@ class Tools extends CI_Controller {
     }
 
     public function index(){
-        $app_id_list = $this->get_app_chart();
-        foreach($app_id_list as $app_id){
-            $result = $this->call_itunes_api($app_id);
-            $this->insert($result['results'][0]);
+        $this->_update_app_chart("topfreeapplications", "top_free_apps");
+        $this->_update_app_chart("toppaidapplications", "top_paid_apps");
+        $this->_update_app_chart("topgrossingapplications", "top_grossing_apps");
+    }
+
+    /*
+     * 指定したランキングフィードからランク情報を取得してデータをアップデート
+     */
+    private function _update_app_chart($url_parts, $table_name){
+        $contents = json_decode(file_get_contents(self::BASE_URL . $url_parts . "/limit=" . self::LIMIT . "/json"), true);
+        $result = array();
+        $this->db->truncate($table_name);
+        foreach($contents['feed']['entry'] as $key => $val){
+            $tmp['id'] = $key + 1; 
+            $tmp['app_id'] = $val['id']['attributes']['im:id'];
+            $this->db->insert($table_name, $tmp);
+
+            //appsテーブルにデータがない場合Insert
+            if($this->db->where('id', $tmp['app_id'])->count_all_results('apps') === 0){
+                $result = $this->_call_itunes_api($tmp['app_id']);
+                $this->_insert_app($result['results'][0]);
+            }
         }
     }
 
-    private function get_app_chart(){
-        $contents = file_get_contents("http://www.apple.com/itunes/charts/paid-apps/");
-        preg_match_all('/id(?P<app_id>\d{9})\?mt=/', $contents, $matches);
-        $unique_id = array_unique($matches['app_id']);
-        $app_id_list = array();
-        foreach($unique_id as $val){
-            $app_id_list[] = $val; 
-        }
-        return $app_id_list;
-    }
-
-    private function call_itunes_api($app_id){
+    /*
+     * アプリIDを指定してAPIから情報を取得する
+     */
+    private function _call_itunes_api($app_id){
         return json_decode(file_get_contents("https://itunes.apple.com/lookup?id=".$app_id), true);
     }
 
-    private function insert($json){
+    /*
+     * appsテーブルにデータをInsert
+     */
+    private function _insert_app($json){
+        if(!isset($json['averageUserRatingForCurrentVersion'])){
+            $json['averageUserRatingForCurrentVersion'] = 0;
+        }
+        if(!isset($json['userRatingCountForCurrentVersion'])){
+            $json['userRatingCountForCurrentVersion'] = 0;
+        }
         $data = array(
             "id" => $json['trackId'],
             "name" => $json['trackCensoredName'], 
