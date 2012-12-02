@@ -5,7 +5,7 @@ class Index extends CI_Controller {
     public function __construct(){
         parent::__construct();
         $this->load->library('layout');
-        $this->data['title'] = 'iOS Review King';
+        $this->data['title'] = 'iOS Review King - Your ultimate "App Finder"';
     }
     
     public function index(){
@@ -55,6 +55,7 @@ STR;
     public function app_detail($app_id){
         $this->load->database();
         $this->data['app'] = $this->db->where("id", $app_id)->get('apps')->row_array();
+        $this->data['reviews'] = $this->db->where("app_id", $app_id)->order_by('helpful_rated_num','desc')->limit(30)->get('reviews')->result_array();
         $this->layout->view('index/app_detail', $this->data);
     }
 }
