@@ -36,6 +36,10 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
+// for scraping reviews
+define("BASE_URL", "https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews");
+define("AP_USER_AGENT", "iTunes/9.2 (Macintosh; U; PPC Mac OS X 10.6)");       
+define("AP_HEADER", "X-Apple-Store-Front: 143441-1");   
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
