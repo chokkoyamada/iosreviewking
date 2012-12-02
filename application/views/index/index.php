@@ -6,12 +6,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </a>
-      <a class="brand" href="#">Project name</a>
+      <a class="brand" href="#">&#128081; iOS Review King</a>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#about">&#128120; Top Reviewers</a></li>
+          <li><a href="#contact">&#128221; Most Reviewed Apps</a></li>
+          <li class="active"><a href="#">&#127775; App Ranking</a></li>
         </ul>
       </div><!--/.nav-collapse -->
     </div>
@@ -19,8 +19,6 @@
 </div>
 
 <div class="container">
-
-  <h1>Bootstrap starter template</h1>
-  <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
-
+  <h1>Your ultimate "App Finder"</h1>
+  <p>iOS Review King is super awesome website where you can find most useful iOS app reviews rediculously easily.</p><p>Tired of surfing AppStore? This is the destination of your journey!</p>
 </div>

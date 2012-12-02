@@ -8,6 +8,14 @@
         <link href="/css/bootstrap.css" rel="stylesheet" media="screen">
         <link href="/css/bootstrap-responsive.css" rel="stylesheet" media="screen">
         <script src="/js/bootstrap.js"></script>
+        <script type="text/javascript">
+        <!--
+          window.onload = function() {
+            // for hide URL bar
+            setTimeout(scrollTo, 100, 0, 1);
+          }
+        // -->
+        </script>
     </head>
     <body>
         <?php echo $content_for_layout; ?>
