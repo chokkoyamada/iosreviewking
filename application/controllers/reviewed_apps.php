@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Index extends CI_Controller {
+class Reviewed_apps extends CI_Controller {
     public $data = array();
 
     public function __construct(){
@@ -9,20 +9,18 @@ class Index extends CI_Controller {
     }
     
     public function index(){
-        $this->layout->view('index/index', $this->data);
+        //$this->layout->view('index/reviewed_apps', $this->data);
+		$this->reviewed_apps();
     }
 
-    public function app_ranking(){
-        $this->load->database();
-        $this->load->helper('rating_to_star');
-        $limit = 30;
+    public function reviewed_apps(){
+        $limit = 10;
         $offset = $this->uri->segment(3);
         if(!$offset){$offset = 0;}
         $this->load->library('pagination');
-        $config['base_url'] = 'http://www.iosreviewking.com/index/app_ranking/';
+        $config['base_url'] = 'http://www.iosreviewking.com/reviewed_apps/';
         $config['total_rows'] = 300;
         $config['per_page'] = $limit;
-        $config['num_links'] = 1;
         $config['full_tag_open'] = '<div class="pagination"><ul>';
         $config['full_tag_close'] = '</ul></div>';
         $config['first_tag_open'] = '<li>';
@@ -37,24 +35,28 @@ class Index extends CI_Controller {
         $config['cur_tag_close'] = '</a></li>';
         $config['num_tag_open'] = '<li>';
         $config['num_tag_close'] = '</li>';
-        $config['first_link'] = '<<';
-        $config['last_link'] = '>>';
-
         $this->pagination->initialize($config);
+        $this->load->database();
         $sql = <<<STR
-            SELECT t.id as rank, a.id as app_id, a.name, a.icon_url_60 as icon_url, a.store_url, a.average_user_rating_for_current_version, a.user_rating_count_for_current_version
-            FROM apps a, top_grossing_apps t 
-            WHERE a.id = t.app_id 
-            ORDER BY t.id ASC 
-            LIMIT $offset, $limit
+            select app_id, name, icon_url_60 as icon_url, sum(helpful_rated_num) as num from reviews
+			inner join apps on apps.id = app_id
+			group by app_id
+			order by num desc
+			LIMIT $offset, $limit
 STR;
+		error_log($sql);
         $this->data['app_list'] = $this->db->query($sql)->result_array();
-        $this->layout->view('index/app_ranking', $this->data);
+        $this->layout->view('index/reviewed_apps', $this->data);
     }
 
     public function app_detail($app_id){
         $this->load->database();
         $this->data['app'] = $this->db->where("id", $app_id)->get('apps')->row_array();
-        $this->layout->view('index/app_detail', $this->data);
+        $this->layout->view('index/reviewed_apps', $this->data);
     }
+
+	public function top_reviewers()
+	{
+
+	}
 }
